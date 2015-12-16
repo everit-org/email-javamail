@@ -1,0 +1,3 @@
+org.everit.email.javamail.sender
+org.everit.email.javamail.sender.internal
+org.everit.email.javamail.util
