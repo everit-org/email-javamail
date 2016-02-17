@@ -15,13 +15,16 @@
  */
 package org.everit.email.javamail.sender.internal;
 
-import javax.mail.Message;
+import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 
 import org.everit.email.Email;
-import org.everit.email.javamail.util.MessageGenerator;
+import org.everit.email.javamail.sender.JavaMailMessageEnhancer;
+import org.everit.email.javamail.util.MimeMessageGenerator;
 import org.everit.email.javamail.util.UncheckedMessagingException;
 import org.everit.email.sender.BulkEmailSender;
 
@@ -30,7 +33,9 @@ import org.everit.email.sender.BulkEmailSender;
  */
 public class JavaMailBulkEmailSender implements BulkEmailSender {
 
-  private final MessageGenerator messageGenerator;
+  private final List<JavaMailMessageEnhancer> enhancers;
+
+  private final MimeMessageGenerator mimeMessageGenerator;
 
   private Transport transport;
 
@@ -40,14 +45,16 @@ public class JavaMailBulkEmailSender implements BulkEmailSender {
    * @param session
    *          The session that is used to open the Transport.
    */
-  public JavaMailBulkEmailSender(final Session session) {
+  public JavaMailBulkEmailSender(final Session session,
+      final List<JavaMailMessageEnhancer> enhancers) {
     try {
       transport = session.getTransport();
       transport.connect();
     } catch (MessagingException e) {
       throw new UncheckedMessagingException(e);
     }
-    messageGenerator = new MessageGenerator();
+    mimeMessageGenerator = new MimeMessageGenerator();
+    this.enhancers = enhancers;
   }
 
   @Override
@@ -61,7 +68,12 @@ public class JavaMailBulkEmailSender implements BulkEmailSender {
 
   @Override
   public void sendEmail(final Email email) {
-    Message message = messageGenerator.generateMessage(email);
+    MimeMessage message = mimeMessageGenerator.generateMimeMessage(email);
+
+    for (JavaMailMessageEnhancer enhancer : enhancers) {
+      message = enhancer.enhance(message);
+    }
+
     try {
       transport.sendMessage(message, message.getAllRecipients());
     } catch (MessagingException e) {

@@ -15,6 +15,9 @@
  */
 package org.everit.email.javamail.sender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.mail.Session;
 
 import org.everit.email.Email;
@@ -27,15 +30,22 @@ import org.everit.email.sender.EmailSender;
  */
 public class JavaMailEmailSender implements EmailSender {
 
+  private final List<JavaMailMessageEnhancer> enhancers;
+
   private final Session session;
 
   public JavaMailEmailSender(final Session session) {
+    this(session, new ArrayList<JavaMailMessageEnhancer>(0));
+  }
+
+  public JavaMailEmailSender(final Session session, final List<JavaMailMessageEnhancer> enhancers) {
     this.session = session;
+    this.enhancers = new ArrayList<>(enhancers);
   }
 
   @Override
   public BulkEmailSender openBulkEmailSender() {
-    return new JavaMailBulkEmailSender(session);
+    return new JavaMailBulkEmailSender(session, enhancers);
   }
 
   @Override
