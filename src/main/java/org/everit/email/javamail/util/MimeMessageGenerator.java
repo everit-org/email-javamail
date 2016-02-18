@@ -24,10 +24,10 @@ import java.util.Set;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -39,9 +39,9 @@ import org.everit.email.Email;
 import org.everit.email.EmailAddress;
 
 /**
- * Generates JavaMail {@link Message} instance based on {@link Email} structure.
+ * Generates JavaMail {@link MimeMessage} instance based on {@link Email} structure.
  */
-public class MessageGenerator {
+public class MimeMessageGenerator {
 
   private static final String DEFAULT_CHARSET = "utf-8";
 
@@ -53,7 +53,7 @@ public class MessageGenerator {
       MimeBodyPart attachmentBodyPart = new MimeBodyPart();
       DataSource dataSource = new AttachmentDataSource(attachment);
       attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-      attachmentBodyPart.setDisposition(BodyPart.ATTACHMENT);
+      attachmentBodyPart.setDisposition(Part.ATTACHMENT);
       attachmentBodyPart.setFileName(attachment.name);
       mixedMultipart.addBodyPart(attachmentBodyPart);
     }
@@ -112,7 +112,7 @@ public class MessageGenerator {
 
   private Multipart createComplexContent(final Email email) throws MessagingException {
     if (email.attachments.size() == 0) {
-      if (email.textContent != null && email.htmlContent != null) {
+      if ((email.textContent != null) && (email.htmlContent != null)) {
         return createAlternativeMultiPart(email);
       } else {
         // Must be HTML with inline images as there are no attachments and yet this is a complex
@@ -125,7 +125,8 @@ public class MessageGenerator {
 
       if (email.htmlContent == null) {
         mixedMultipart.addBodyPart(createTextBodyPart(email));
-      } else if (email.textContent == null && email.htmlContent.inlineImageByCidMap.size() == 0) {
+      } else if ((email.textContent == null)
+          && (email.htmlContent.inlineImageByCidMap.size() == 0)) {
         mixedMultipart.addBodyPart(createHtmlBodyPart(email));
       } else {
         MimeBodyPart coverBodyPart = new MimeBodyPart();
@@ -178,13 +179,13 @@ public class MessageGenerator {
   }
 
   /**
-   * Generates a JSR 919 {@link Message} from an {@link Email} structure.
+   * Generates a JSR 919 {@link MimeMessage} from an {@link Email} structure.
    *
    * @param email
    *          The {@link Email} structure.
-   * @return the JSR 919 {@link Message}.
+   * @return the JSR 919 {@link MimeMessage}.
    */
-  public Message generateMessage(final Email email) {
+  public MimeMessage generateMimeMessage(final Email email) {
     validateMailParams(email);
 
     MimeMessage message = new MimeMessage((Session) null);
@@ -216,8 +217,8 @@ public class MessageGenerator {
     if (mailParams.htmlContent == null) {
       return true;
     }
-    if (mailParams.textContent == null
-        && mailParams.htmlContent.inlineImageByCidMap.size() == 0) {
+    if ((mailParams.textContent == null)
+        && (mailParams.htmlContent.inlineImageByCidMap.size() == 0)) {
       return true;
     }
     return false;
@@ -241,7 +242,7 @@ public class MessageGenerator {
       throw new IllegalArgumentException("At least one recipient must be defined");
     }
 
-    if (email.htmlContent == null && email.textContent == null) {
+    if ((email.htmlContent == null) && (email.textContent == null)) {
       throw new IllegalArgumentException(
           "Neither HTML nor Text content is defined. At least one of them should be declared.");
     }
