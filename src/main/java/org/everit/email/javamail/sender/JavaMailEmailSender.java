@@ -16,6 +16,7 @@
 package org.everit.email.javamail.sender;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.mail.Session;
@@ -38,7 +39,8 @@ public class JavaMailEmailSender implements EmailSender {
     this(session, new ArrayList<JavaMailMessageEnhancer>(0));
   }
 
-  public JavaMailEmailSender(final Session session, final List<JavaMailMessageEnhancer> enhancers) {
+  public JavaMailEmailSender(final Session session,
+      final Collection<JavaMailMessageEnhancer> enhancers) {
     this.session = session;
     this.enhancers = new ArrayList<>(enhancers);
   }
