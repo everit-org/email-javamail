@@ -36,4 +36,4 @@ JSR 919 (javax.mail) based implementation of [Everit Email API][1].
 
 Find examples about the construction of email structures in the [documentation of email-api][1].
 
-[1]: http://everit.org/email-api/
+[1]: https://github.com/everit-org/email-api/
