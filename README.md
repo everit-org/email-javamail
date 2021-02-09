@@ -21,7 +21,7 @@ JSR 919 (javax.mail) based implementation of [Everit Email API][1].
     
     // Create an email sender that will use the session
     
-    EmailSender emailSender = new JavaMailSender(session);
+    EmailSender emailSender = new JavaMailEmailSender(session);
     
     
     // Send an email with the emailSender instance as it is shown in the
