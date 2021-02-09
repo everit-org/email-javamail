@@ -32,7 +32,7 @@ JSR 919 (javax.mail) based implementation of [Everit Email API][1].
     
     // Send the email
     
-    email.sendEmail(email);
+    emailSender.sendEmail(email);
 
 Find examples about the construction of email structures in the [documentation of email-api][1].
 
